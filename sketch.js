@@ -1,4 +1,4 @@
-const scale = 90;
+const scale = 100;
 const factor = 15;
 const RULESETS = { GAME_OF_LIFE: 0, DAY_AND_NIGHT: 1, MOV_DAY_AND_NIGHT: 2 };
 
@@ -7,15 +7,46 @@ let active = 0;
 let field;
 let colorfield;
 let game = RULESETS.DAY_AND_NIGHT;
+let button;
+let fps = 0;
+
+let isPaused = false;
 
 function setup() {
     createCanvas(scale * factor + 1000, scale * factor);
+    setupButton();
     initField();
 }
 
+
 function draw() {
-    updateField();
+    if (!isPaused){
+        updateField();
+    }
 }
+
+
+function setupButton(){
+    button = createButton('Pause');
+    button.position(scale*factor + 100, 500)
+    button.size(width/8 + 30, height/8);
+    button.mousePressed(pauseGame);
+    button.style('background-color', color(0,0,255));
+    button.style('font-size', 100)
+
+    button = createButton('Restart');
+    button.position(scale*factor + 500, 500)
+    button.size(width/8 + 30, height/8);
+    button.mousePressed(restartGame);
+    button.style('background-color', color(0,0,255));
+    button.style('font-size', 100)
+}
+
+function restartGame(){
+    generation = 0;
+    initField();
+} 
+
 
 function init2DArray(array, size) {
     array = new Array(size);
@@ -50,12 +81,17 @@ function showField(localField, x, y) {
     }
 }
 
+function pauseGame(){
+    isPaused = !isPaused;
+}
+
 function updateText() {
     background(220);
     textSize(100);
     textFont('consolas')
     text("Generation: " + generation, scale * factor + 100, 100);
-    text('Active: ' + active, scale * factor + 100, 200);
+    text("Active: " + active, scale * factor + 100, 200);
+    text("FPS: " + round(frameRate()), scale * factor + 100, 300);
 }
 
 function updateField() {
@@ -73,7 +109,7 @@ function updateField() {
 
     for (var x = 0; x < scale; x++) {
         for (var y = 0; y < scale; y++) {
-            offset = round(random(0.4, 1));
+            
             active += field[x][y];
             var liveNeighbors = 0;
 
@@ -108,6 +144,7 @@ function updateField() {
                     else newField[x][y] = 0;
                     break;
                 case RULESETS.MOV_DAY_AND_NIGHT:
+                    offset = round(random(0.4, 1));
                     if ([3, 4, 6, 7, 8].includes(liveNeighbors) && field[x][y] == 1) newField[x + 1][y] = 1;
                     else if ([3, 6, 7, 8].includes(liveNeighbors) && field[x][y] == 0) newField[x + 1][y] = 1;
                     else newField[x + 1][y] = 0;
