@@ -1,13 +1,30 @@
-const RULESETS = { GAME_OF_LIFE: "B3/S23", DAY_AND_NIGHT: "B3678/S34678"};
+//TODO: connect functions with automaton
+const AUTOMATON_RULESETS = {
+    //https://www.conwaylife.com/wiki/List_of_Life-like_cellular_automata 
+    GAME_OF_LIFE: "B3/S23", 
+    DAY_AND_NIGHT: "B3678/S34678",
+    LIFE_WITHOUT_DEATH: "B3/S012345678", // best Function -> round(random(-2.5, 1))
+    SEEDS: "B2/S0", // round(random(-3, 1))
+    REPLICATOR: "B1357/S1357", // round(random(-5, 1))
+    _34LIFE: "B34/S34", // round(random(-1, 1))
+    DIAMOEBAE: "B35678/S5678", //round(random(0, 1))
+    _2x2: "B36/S125", //round(random(-1, 1))
+    HIGHLIFE: "B36/S23", //round(random(-1, 1))
+    MORLEY: "B368/S245", // round(random(-0.5, 1))
+    ANNEAL: "B4678/S35678", // round(random(0, 1))
+    MAZE: "B3/S12345", // round(random(-2.5, 1))
+    MAZECETRIC: "B3/S1234", // round(random(-2.5, 1))
+    FREDKIN: "B1357/S02468", //round(random(-5, 1))
+    VOTE45: "B4678/S35678", //round(random(0, 1))
+    WALLED_CITIES: "B45678/S2345", //round(random(-0.75, 1))
+    H_TREES: "B1/S012345678", //round(random(-5, 1))
+}; 
 
 let game;
 
 function setup() {
     createCanvas(3000, 1500);
-    game = new CellularAutomaton(RULESETS.GAME_OF_LIFE, 90, 1);
-    game.setupButton();
-    game.initField(() => {return round(random(0,1));});
-    game.addPattern(PATTERNS.GLIDERGUN, 10, 10)
+    game = new CellularAutomaton(AUTOMATON_RULESETS.LIFE_WITHOUT_DEATH, 100, 0, () => {return round(random(-2.5, 1));});
 }
 
 function draw() {

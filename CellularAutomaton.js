@@ -1,20 +1,27 @@
 class CellularAutomaton
 {
     generation = 0;
+    scale = 0;
+    active = 0;
+    movement = 0;
+    factor = 15;
+
     field = [];
     colorfield = [];
     born = [];
     survive = [];
-    scale = 0;
-    active = 0;
-    factor = 15;
-    movement = 0;
-    isPaused;
-    buttonR;
-    buttomP;
 
-    constructor(rule, scale, movement)
+    isPaused = false;
+    fieldinitfunc = () => {};
+    rule = "";
+
+    constructor(rule, scale, movement, fieldinitfunc)
     {
+        this.rule = rule;
+        this.scale = scale;
+        this.movement = movement;
+        this.fieldinitfunc = fieldinitfunc;
+
         var tempborn = rule.split('/')[0];
         var tempsurvive = rule.split('/')[1];
         this.born = tempborn.split('');
@@ -23,12 +30,12 @@ class CellularAutomaton
         this.survive.shift();
         for (var i = 0; i < this.born.length; i++) this.born[i] = +this.born[i];
         for (var i = 0; i < this.survive.length; i++) this.survive[i] = +this.survive[i];
-        this.scale = scale;
-        this.movement = movement;
-        this.isPaused = false;
+        
+        this.setupButton();
+        this.initField();
     }
 
-    initField(fieldinit) 
+    initField() 
     {
         this.generation = 0;
         this.field = CellularAutomaton.init2DArray(this.scale);
@@ -36,7 +43,7 @@ class CellularAutomaton
     
         for (var x = 0; x < this.scale; x++) {
             for (var y = 0; y < this.scale; y++) {
-                var result = fieldinit();
+                var result = this.fieldinitfunc();
                 this.field[x][y] = result;
                 this.active += result;
                 this.colorfield[x][y] = 0;
@@ -44,36 +51,40 @@ class CellularAutomaton
         }
     }
 
+
     setupButton(){
-        this.buttonP = createButton('Pause');
-        this.buttonP.position(this.scale * this.factor + 100, 500)
-        this.buttonP.size(width/8 + 30, height/8);
-        this.buttonP.mousePressed(() => this.isPaused = !this.isPaused);
-        this.buttonP.style('background-color', color(0,0,255));
-        this.buttonP.style('font-size', 100)
+        var buttonP = createButton('Pause');
+        buttonP.position(this.scale * this.factor + 40*this.factor, this.factor*75)
+        buttonP.size(width/8 + 30, height/8);
+        buttonP.mousePressed(() => this.isPaused = !this.isPaused);
+        buttonP.style('background-color', color(0,0,255));
+        buttonP.style('font-size', 100)
     
-        this.buttonR = createButton('Restart');
-        this.buttonR.position(this.scale * this.factor + 500, 500)
-        this.buttonR.size(width/8 + 30, height/8);
-        this.buttonR.mousePressed(() => this.initField());
-        this.buttonR.style('background-color', color(0,0,255));
-        this.buttonR.style('font-size', 100)
+        var buttonR = createButton('Restart');
+        buttonR.position(this.scale * this.factor + 7*this.factor, this.factor*75);
+        buttonR.size(width/8 + 30, height/8);
+        buttonR.mousePressed(() => this.initField());
+        buttonR.style('background-color', color(0,0,255));
+        buttonR.style('font-size', 100)
     }
 
     updateText() 
     {
         background(220);
-        textSize(100);
+        textSize(90);
         textFont("consolas")
         text("Generation: " + this.generation, this.scale * this.factor + 100, 100);
         text("Active: " + this.active, this.scale * this.factor + 100, 200);
         text("FPS: " + round(frameRate()), this.scale * this.factor + 100, 300)
+        text("Current Rule: " + this.rule, this.scale * this.factor + 100, 500);
+        textSize(40);
+        text("fieldinitfunc: " + this.fieldinitfunc.toString(), this.scale * this.factor + 100, 600);
     }
 
     showField(localField, x, y) 
     {
         if (localField[x][y] == 1) {
-            fill(0, 0, this.colorfield[x][y] * 32);
+            fill(0, 0, 255);
             rect(x * this.factor, y * this.factor, this.scale, this.scale);
         }
         else {
@@ -94,8 +105,7 @@ class CellularAutomaton
         newField = CellularAutomaton.init2DArray(this.scale + this.movement);
         for (var x = 0; x < this.scale; x++) {
             for (var y = 0; y < this.scale; y++) {
-                if (this.movement != 0) offset = round(random(0.4, 1));
-                print(offset);
+                //if (this.movement != 0) offset = round(random(0.4, 1));
                 this.active += this.field[x][y];
                 var liveNeighbors = 0;
     
@@ -120,7 +130,7 @@ class CellularAutomaton
                 if (this.survive.includes(liveNeighbors) && this.field[x][y] == 1) newField[x + this.movement][y] = 1;
                 else if (this.born.includes(liveNeighbors) && this.field[x][y] == 0) newField[x + this.movement][y] = 1;
                 else newField[x][y] = 0;
-                if (this.movement != 0) newField[0][y] = offset;
+                //if (this.movement != 0) newField[0][y] = offset;
                 this.showField(newField, x, y);
             }
         }
