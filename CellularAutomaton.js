@@ -9,11 +9,9 @@ class CellularAutomaton
     active = 0;
     factor = 15;
     movement = 0;
-    isPaused = false;
-
-    get isPaused(){
-        return this.isPaused;
-    }
+    isPaused;
+    buttonR;
+    buttomP;
 
     constructor(rule, scale, movement)
     {
@@ -27,6 +25,7 @@ class CellularAutomaton
         for (var i = 0; i < this.survive.length; i++) this.survive[i] = +this.survive[i];
         this.scale = scale;
         this.movement = movement;
+        this.isPaused = false;
     }
 
     initField() 
@@ -46,31 +45,29 @@ class CellularAutomaton
     }
 
     setupButton(){
-        var buttonR = createButton('Pause');
-        buttonR.position(this.scale * this.factor + 100, 500)
-        buttonR.size(width/8 + 30, height/8);
-        buttonR.mousePressed(this.pauseGame);
-        buttonR.style('background-color', color(0,0,255));
-        buttonR.style('font-size', 100)
+        this.buttonP = createButton('Pause');
+        this.buttonP.position(this.scale * this.factor + 100, 500)
+        this.buttonP.size(width/8 + 30, height/8);
+        this.buttonP.mousePressed(function () {this.isPaused = !this.isPaused;});
+        this.buttonP.style('background-color', color(0,0,255));
+        this.buttonP.style('font-size', 100)
     
-        var buttonP = createButton('Restart');
-        buttonP.position(this.scale * this.factor + 500, 500)
-        buttonP.size(width/8 + 30, height/8);
-        buttonP.mousePressed(this.initField);
-        buttonP.style('background-color', color(0,0,255));
-        buttonP.style('font-size', 100)
+        this.buttonR = createButton('Restart');
+        this.buttonR.position(this.scale * this.factor + 500, 500)
+        this.buttonR.size(width/8 + 30, height/8);
+        this.buttonR.mousePressed(this.initField);
+        this.buttonR.style('background-color', color(0,0,255));
+        this.buttonR.style('font-size', 100)
     }
 
-    pauseGame(){
-        this.isPaused = !this.isPaused;
-    }
-
-    updateText() {
+    updateText() 
+    {
         background(220);
         textSize(100);
-        textFont('consolas')
+        textFont("consolas")
         text("Generation: " + this.generation, this.scale * this.factor + 100, 100);
-        text('Active: ' + this.active, this.scale * this.factor + 100, 200);
+        text("Active: " + this.active, this.scale * this.factor + 100, 200);
+        text("FPS: " + round(frameRate()), this.scale * this.factor + 100, 300)
     }
 
     showField(localField, x, y) 
