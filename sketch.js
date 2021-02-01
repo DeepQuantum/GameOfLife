@@ -1,167 +1,22 @@
-const scale = 100;
+const scale = 110;
 const factor = 15;
-const RULESETS = { GAME_OF_LIFE: 0, DAY_AND_NIGHT: 1, MOV_DAY_AND_NIGHT: 2 };
+const RULESETS = { GAME_OF_LIFE: "B3/S23", DAY_AND_NIGHT: "B3678/S34678"};
 
-let generation = 0;
-let active = 0;
-let field;
-let colorfield;
-let game = RULESETS.DAY_AND_NIGHT;
-let button;
-let fps = 0;
-
-let isPaused = false;
+let game;
 
 function setup() {
     createCanvas(scale * factor + 1000, scale * factor);
-    setupButton();
-    initField();
+    game = new CellularAutomaton(RULESETS.DAY_AND_NIGHT, 90, 0);
+    game.setupButton();
+    game.initField();
 }
-
 
 function draw() {
-    if (!isPaused){
-        updateField();
+    if (!game.isPaused){
+        game.updateField();
     }
 }
 
-
-function setupButton(){
-    button = createButton('Pause');
-    button.position(scale*factor + 100, 500)
-    button.size(width/8 + 30, height/8);
-    button.mousePressed(pauseGame);
-    button.style('background-color', color(0,0,255));
-    button.style('font-size', 100)
-
-    button = createButton('Restart');
-    button.position(scale*factor + 500, 500)
-    button.size(width/8 + 30, height/8);
-    button.mousePressed(restartGame);
-    button.style('background-color', color(0,0,255));
-    button.style('font-size', 100)
-}
-
-function restartGame(){
-    generation = 0;
-    initField();
-} 
-
-
-function init2DArray(array, size) {
-    array = new Array(size);
-    for (var i = 0; i < size; i++) {
-        array[i] = new Array(scale);
-    }
-    return array;
-}
-
-function initField() {
-    field = init2DArray(field, scale);
-    colorfield = init2DArray(colorfield, scale);
-
-    for (var x = 0; x < scale; x++) {
-        for (var y = 0; y < scale; y++) {
-            result = round(random(0, 1));
-            field[x][y] = result;
-            active += result;
-            colorfield[x][y] = 0;
-        }
-    }
-}
-
-function showField(localField, x, y) {
-    if (localField[x][y] == 1) {
-        fill(0, 0, colorfield[x][y] * 32);
-        rect(x * factor, y * factor, scale, scale);
-    }
-    else {
-        fill(0, 0, 0);
-        rect(x * factor, y * factor, scale, scale);
-    }
-}
-
-function pauseGame(){
-    isPaused = !isPaused;
-}
-
-function updateText() {
-    background(220);
-    textSize(100);
-    textFont('consolas')
-    text("Generation: " + generation, scale * factor + 100, 100);
-    text("Active: " + active, scale * factor + 100, 200);
-    text("FPS: " + round(frameRate()), scale * factor + 100, 300);
-}
-
-function updateField() {
-    updateText();
-    generation++;
-    active = 0;
-    var newField;
-    if (game == RULESETS.MOV_DAY_AND_NIGHT) {
-        newField = init2DArray(newField, scale + 1);
-    }
-    else {
-        newField = init2DArray(newField, scale);
-    }
-    var offset;
-
-    for (var x = 0; x < scale; x++) {
-        for (var y = 0; y < scale; y++) {
-            
-            active += field[x][y];
-            var liveNeighbors = 0;
-
-            // Get active neighbors
-            for (var i = -1; i <= 1; i++) {
-                for (var j = -1; j <= 1; j++) {
-                    if (i == 0 && j == 0) continue;
-                    else if (x == 0 || y == 0 || x == scale - 1 || y == scale - 1) {
-                        try {
-                            liveNeighbors += field[x + i][y + j];
-                        }
-                        catch (IndexOutOfRangeException) { continue; }
-                    }
-                    else {
-                        liveNeighbors += field[x + i][y + j];
-                    }
-                }
-            }
-
-            colorfield[x][y] = liveNeighbors;
-
-            // Apply rules based on game type 
-            switch (game) {
-                case RULESETS.GAME_OF_LIFE:
-                    if (liveNeighbors == 2 && field[x][y] == 1) newField[x][y] = 1;
-                    else if (liveNeighbors == 3) newField[x][y] = 1;
-                    else newField[x][y] = 0;
-                    break;
-                case RULESETS.DAY_AND_NIGHT:
-                    if ([3, 4, 6, 7, 8].includes(liveNeighbors) && field[x][y] == 1) newField[x][y] = 1;
-                    else if ([3, 6, 7, 8].includes(liveNeighbors) && field[x][y] == 0) newField[x][y] = 1;
-                    else newField[x][y] = 0;
-                    break;
-                case RULESETS.MOV_DAY_AND_NIGHT:
-                    offset = round(random(0.4, 1));
-                    if ([3, 4, 6, 7, 8].includes(liveNeighbors) && field[x][y] == 1) newField[x + 1][y] = 1;
-                    else if ([3, 6, 7, 8].includes(liveNeighbors) && field[x][y] == 0) newField[x + 1][y] = 1;
-                    else newField[x + 1][y] = 0;
-                    newField[0][y] = offset;
-                    break;
-            }
-            showField(newField, x, y);
-        }
-    }
-    field = newField;
-}
-
-function addPattern(p, x, y) {
-    for (var i = 0; i < p.length; i++) {
-        field[p[i][0] + x][p[i][1] + y] = 1;
-    }
-}
 
 class Patterns {
     static GLIDER() {
