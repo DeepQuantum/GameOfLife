@@ -1,11 +1,11 @@
 class MovingCellularAutomaton extends CellularAutomaton
 {
-    constructor(rule, scale, movx, movy)
+    constructor(rule, scale, movx, movy, probabilityoffset)
     {
         super(rule, scale);
         this.movx = movx;
         this.movy = movy;
-        this.probabilityoffset = rule[2];
+        this.probabilityoffset = probabilityoffset;
     }
 
     updateField()
@@ -17,23 +17,28 @@ class MovingCellularAutomaton extends CellularAutomaton
         var newField;
 
         newField = CellularAutomaton.init2DArray(this.scale + this.movx);
-        for (var x = 0; x < this.scale; x++) {
-            for (var y = 0; y < this.scale; y++) {
+        for (var x = 0; x < this.scale; x++) 
+        {
+            for (var y = 0; y < this.scale; y++) 
+            {
                 this.active += this.field[x][y];
                 var liveNeighbors = 0;
-                offset = (random(this.probabilityoffset, 100)) <= this.probabilityoffset ? 1 : 0;
-
+                offset = random(0, 100) <= this.probabilityoffset ? 1 : 0;
                 
-                for (var i = -1; i <= 1; i++) {
-                    for (var j = -1; j <= 1; j++) {
+                for (var i = -1; i <= 1; i++) 
+                {
+                    for (var j = -1; j <= 1; j++) 
+                    {
                         if (i == 0 && j == 0) continue;
                         else if (x == 0 || y == 0 || x == this.scale - 1 || y == this.scale - 1) {
-                            try {
+                            try 
+                            {
                                 liveNeighbors += this.field[x + i][y + j];
                             }
                             catch (IndexOutOfRangeException) { continue; }
                         }
-                        else {
+                        else 
+                        {
                             liveNeighbors += this.field[x + i][y + j];
                         }
                     }

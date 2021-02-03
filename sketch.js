@@ -1,11 +1,11 @@
-//TODO: connect functions with automaton
+//TODO: code graph https://editor.p5js.org/aferriss/sketches/S1UTHZBHm
 const AUTOMATON_RULESETS = 
 {
     //https://www.conwaylife.com/wiki/List_of_Life-like_cellular_automata 
-    GAME_OF_LIFE: "B3/S23", 
-    DAY_AND_NIGHT: "B3678/S34678",
-    LIFE_WITHOUT_DEATH: ["B3/S012345678", 30],
-    SEEDS: ["B2/S0", 40],
+    GAME_OF_LIFE: ["B3/S23", 90], 
+    DAY_AND_NIGHT: ["B3678/S34678", 90],
+    LIFE_WITHOUT_DEATH: ["B3/S012345678", 2],
+    SEEDS: ["B2/S0", 1],
     REPLICATOR: ["B1357/S1357", 10], 
     _34LIFE: ["B34/S34", 40], 
     DIAMOEBAE: ["B35678/S5678", 50], 
@@ -17,7 +17,7 @@ const AUTOMATON_RULESETS =
     MAZECETRIC: ["B3/S1234", 25], 
     FREDKIN: ["B1357/S02468", 10],
     VOTE45: ["B4678/S35678", 50], 
-    WALLED_CITIES: ["B45678/S2345", 35], 
+    WALLED_CITIES: ["B45678/S2345", 20], 
     H_TREES: ["B1/S012345678", 10],
 }; 
 
@@ -25,7 +25,7 @@ let game;
 
 function setup() {
     createCanvas(3000, 1500);
-    game = new CellularAutomaton(AUTOMATON_RULESETS.MAZE, 90);
+    game = new MovingCellularAutomaton(AUTOMATON_RULESETS.WALLED_CITIES, 90, 1, 0, 40);
 }
 
 function draw() {
