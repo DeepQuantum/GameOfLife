@@ -17,7 +17,6 @@ class CellularAutomaton
         for (var i = 0; i < this.born.length; i++) this.born[i] = +this.born[i];
         for (var i = 0; i < this.survive.length; i++) this.survive[i] = +this.survive[i];
         
-        this.setupButton();
         this.initField();
     }
 
@@ -37,53 +36,21 @@ class CellularAutomaton
         }
     }
 
-
-    setupButton()
-    {
-        var buttonP = createButton('Pause');
-        buttonP.position(this.scale * 15 + 40*15, 15*75)
-        buttonP.size(width/8 + 30, height/8);
-        buttonP.mousePressed(() => this.isPaused = !this.isPaused);
-        buttonP.style('background-color', color(0,0,255));
-        buttonP.style('font-size', 100)
-    
-        var buttonR = createButton('Restart');
-        buttonR.position(this.scale * 15 + 7*15, 15*75);
-        buttonR.size(width/8 + 30, height/8);
-        buttonR.mousePressed(() => this.initField());
-        buttonR.style('background-color', color(0,0,255));
-        buttonR.style('font-size', 100)
-    }
-
-    updateText() 
-    {
-        background(220);
-        textSize(90);
-        textFont("consolas")
-        text("Generation: " + this.generation, this.scale * 15 + 100, 100);
-        text("Active: " + this.active, this.scale * 15 + 100, 200);
-        text("FPS: " + round(frameRate()), this.scale * 15 + 100, 300)
-        text("Current Rule: " + this.rule, this.scale * 15 + 100, 500);
-        textSize(40);
-        text("Probability: " + this.probability + "% per cell", this.scale * 15 + 100, 600);
-    }
-
     showField(localField, x, y) 
     {
         if (localField[x][y] == 1) {
             fill(0, 0, 255);
-            rect(x * 15, y * 15, this.scale, this.scale);
+            rect(x * 15, y * 15, this.scale / 5, this.scale / 5);
         }
         else {
-            fill(0, 0, 0);
-            rect(x * 15, y * 15, this.scale, this.scale);
+            // fill(0, 0, 0);
+            // rect(x * 15, y * 15, this.scale / 5, this.scale / 5);
         }
     }
 
 
     updateField() 
     {
-        this.updateText();
         this.generation++;
         this.active = 0;
         var newField;

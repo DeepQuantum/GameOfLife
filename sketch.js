@@ -13,25 +13,75 @@ const AUTOMATON_RULESETS =
     HIGHLIFE: ["B36/S23", 30], 
     MORLEY: ["B368/S245", 35], 
     ANNEAL: ["B4678/S35678", 50], 
-    MAZE: ["B3/S12345", 2], 
+    MAZE: ["B3/S12345", 3], 
     MAZECETRIC: ["B3/S1234", 25], 
     FREDKIN: ["B1357/S02468", 10],
     VOTE45: ["B4678/S35678", 50], 
-    WALLED_CITIES: ["B45678/S2345", 20], 
-    H_TREES: ["B1/S012345678", 10],
+    WALLED_CITIES: ["B45678/S2345", 22.5], 
+    H_TREES: ["B1/S012345678", 0.05],
 }; 
 
 let game;
+let slider;
 
 function setup() {
+    game = new CellularAutomaton(AUTOMATON_RULESETS.H_TREES, 90);
+
     createCanvas(3000, 1500);
-    game = new MovingCellularAutomaton(AUTOMATON_RULESETS.WALLED_CITIES, 90, 1, 0, 40);
+    background(0);
+
+    slider = createSlider(0, 60, 60, 1);
+    slider.position(game.scale * 15 + 600, 220);
+    slider.style('width', '');
+    slider.style('height', '10px');
+    slider.size(200, 200);
+
+    setupButton();
+    
 }
 
 function draw() {
     if (!game.isPaused){
+        updateText();
+        updateFramerate();
         game.updateField();
     }
+}
+
+function setupButton()
+{
+    var buttonP = createButton('Pause');
+    buttonP.position(game.scale * 15 + 40*15, 15*75)
+    buttonP.size(width/8 + 30, height/8);
+    buttonP.mousePressed(() => game.isPaused = !game.isPaused);
+    buttonP.style('background-color', color(0,0,255));
+    buttonP.style('font-size', 100)
+
+    var buttonR = createButton('Restart');
+    buttonR.position(game.scale * 15 + 7*15, 15*75);
+    buttonR.size(width/8 + 30, height/8);
+    buttonR.mousePressed(() => game.initField());
+    buttonR.style('background-color', color(0,0,255));
+    buttonR.style('font-size', 100)
+}
+
+
+function updateText() 
+{
+    background(0);
+    textSize(90);
+    textFont("consolas")
+    text("Generation: " + game.generation, game.scale * 15 + 100, 100);
+    text("Active: " + game.active, game.scale * 15 + 100, 200);
+    text("FPS: " + round(frameRate()), game.scale * 15 + 100, 300)
+    text("Current Rule: " + game.rule, game.scale * 15 + 100, 500);
+    textSize(40);
+    text("Probability: " + game.probability + "% per cell", game.scale * 15 + 100, 600);
+}
+
+function updateFramerate()
+{
+    frameRate(slider.value());
 }
 
 const PATTERNS = {
