@@ -10,7 +10,6 @@ class MovingCellularAutomaton extends CellularAutomaton
 
     updateField()
     {
-        this.updateText();
         this.generation++;
         this.active = 0;
         var offset = 0;

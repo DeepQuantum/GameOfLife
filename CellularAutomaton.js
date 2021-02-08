@@ -25,6 +25,8 @@ class CellularAutomaton
         this.generation = 0;
         this.field = CellularAutomaton.init2DArray(this.scale);
         this.colorfield = CellularAutomaton.init2DArray(this.scale);
+        
+
     
         for (var x = 0; x < this.scale; x++) {
             for (var y = 0; y < this.scale; y++) {
@@ -40,11 +42,8 @@ class CellularAutomaton
     {
         if (localField[x][y] == 1) {
             fill(0, 0, 255);
-            rect(x * 15, y * 15, this.scale / 5, this.scale / 5);
-        }
-        else {
-            // fill(0, 0, 0);
-            // rect(x * 15, y * 15, this.scale / 5, this.scale / 5);
+            stroke(0);
+            rect(x * 15, y * 15, (this.scale / 5) - 3, (this.scale / 5) - 3);
         }
     }
 
@@ -78,7 +77,7 @@ class CellularAutomaton
     
                 this.colorfield[x][y] = liveNeighbors;
     
-                if (this.survive.includes(liveNeighbors) && this.field[x][y] == 1) newField[x ][y] = 1;
+                if (this.survive.includes(liveNeighbors) && this.field[x][y] == 1) newField[x][y] = 1;
                 else if (this.born.includes(liveNeighbors) && this.field[x][y] == 0) newField[x][y] = 1;
                 else newField[x][y] = 0;
                 this.showField(newField, x, y);
@@ -87,8 +86,10 @@ class CellularAutomaton
         this.field = newField;
     }
 
-    addPattern(p, x, y) {
-        for (var i = 0; i < p.length; i++) {
+    addPattern(p, x, y) 
+    {
+        for (var i = 0; i < p.length; i++) 
+        {
             this.field[p[i][0] + x][p[i][1] + y] = 1;
         }
     }

@@ -2,10 +2,10 @@
 const AUTOMATON_RULESETS = 
 {
     //https://www.conwaylife.com/wiki/List_of_Life-like_cellular_automata 
-    GAME_OF_LIFE: ["B3/S23", 90], 
-    DAY_AND_NIGHT: ["B3678/S34678", 90],
+    GAME_OF_LIFE: ["B3/S23", 0], 
+    DAY_AND_NIGHT: ["B3678/S34678", 50],
     LIFE_WITHOUT_DEATH: ["B3/S012345678", 2],
-    SEEDS: ["B2/S0", 1],
+    SEEDS: ["B2/S0", 0.1],
     REPLICATOR: ["B1357/S1357", 10], 
     _34LIFE: ["B34/S34", 40], 
     DIAMOEBAE: ["B35678/S5678", 50], 
@@ -15,7 +15,7 @@ const AUTOMATON_RULESETS =
     ANNEAL: ["B4678/S35678", 50], 
     MAZE: ["B3/S12345", 3], 
     MAZECETRIC: ["B3/S1234", 25], 
-    FREDKIN: ["B1357/S02468", 10],
+    FREDKIN: ["B1357/S02468", 1],
     VOTE45: ["B4678/S35678", 50], 
     WALLED_CITIES: ["B45678/S2345", 22.5], 
     H_TREES: ["B1/S012345678", 0.05],
@@ -23,13 +23,17 @@ const AUTOMATON_RULESETS =
 
 let game;
 let slider;
+let graphPoints;
 
 function setup() {
-    game = new CellularAutomaton(AUTOMATON_RULESETS.H_TREES, 90);
+    game = new CellularAutomaton(AUTOMATON_RULESETS.GAME_OF_LIFE, 90);
+    game.addPattern(PATTERNS.GLIDERGUN, 10, 10);
+    
 
     createCanvas(3000, 1500);
     background(0);
-
+    graphPoints = [];
+    
     slider = createSlider(0, 60, 60, 1);
     slider.position(game.scale * 15 + 600, 220);
     slider.style('width', '');
@@ -37,33 +41,66 @@ function setup() {
     slider.size(200, 200);
 
     setupButton();
-    
+
 }
 
-function draw() {
-    if (!game.isPaused){
+function draw() 
+{
+    if (!game.isPaused)
+    {
         updateText();
         updateFramerate();
+        drawGraph();
         game.updateField();
     }
 }
 
+function resetGame()
+{
+    graphPoints = [];
+    game.initField();
+}
+
+
 function setupButton()
 {
     var buttonP = createButton('Pause');
-    buttonP.position(game.scale * 15 + 40*15, 15*75)
-    buttonP.size(width/8 + 30, height/8);
+    buttonP.position(game.scale * 15 + 1200, 50)
+    buttonP.size(width/20 + 30, height/20);
     buttonP.mousePressed(() => game.isPaused = !game.isPaused);
     buttonP.style('background-color', color(0,0,255));
-    buttonP.style('font-size', 100)
+    buttonP.style('font-size', 40)
 
     var buttonR = createButton('Restart');
-    buttonR.position(game.scale * 15 + 7*15, 15*75);
-    buttonR.size(width/8 + 30, height/8);
-    buttonR.mousePressed(() => game.initField());
+    buttonR.position(game.scale * 15 + 1400, 50);
+    buttonR.size(width/20 + 30, height/20);
+    buttonR.mousePressed(() => resetGame());
     buttonR.style('background-color', color(0,0,255));
-    buttonR.style('font-size', 100)
+    buttonR.style('font-size', 40)
 }
+
+function drawGraph()
+{
+    graphPoints.push(game.active);
+    rect(game.scale * 15 + 100, 640, 5, 760);
+    rect(game.scale * 15 + 100, 1400, 1500, 5);
+    for(var i = 0; i < graphPoints.length; i++)
+    {
+        const pointX = (game.scale * 15 + 100) + (i * 10);
+        const pointY = 1400 - graphPoints[i] / 10.6578947;
+        if (pointX > width - 70)
+        {
+            graphPoints.splice(0, 1);
+        }
+        ellipse(pointX, pointY, 7);
+        stroke(255);
+        prevX = (game.scale * 15 + 100) + ((i - 1) * 10);
+        prevY = 1400 - graphPoints[i - 1] / 10.6578947
+        line(prevX, prevY, pointX, pointY);
+        noStroke();
+    }
+}
+
 
 
 function updateText() 
