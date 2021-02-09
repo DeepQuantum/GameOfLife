@@ -26,8 +26,7 @@ let slider;
 let graphPoints;
 
 function setup() {
-    game = new CellularAutomaton(AUTOMATON_RULESETS.GAME_OF_LIFE, 90);
-    game.addPattern(PATTERNS.GLIDERGUN, 10, 10);
+    game = new MovingCellularAutomaton(AUTOMATON_RULESETS.DAY_AND_NIGHT, 90, 1, 0, 75);
     
 
     createCanvas(3000, 1500);
@@ -111,7 +110,7 @@ function updateText()
     text("Generation: " + game.generation, game.scale * 15 + 100, 100);
     text("Active: " + game.active, game.scale * 15 + 100, 200);
     text("FPS: " + round(frameRate()), game.scale * 15 + 100, 300)
-    text("Current Rule: " + game.rule, game.scale * 15 + 100, 500);
+    text("Current Rule: " + game.rule[0], game.scale * 15 + 100, 500);
     textSize(40);
     text("Probability: " + game.probability + "% per cell", game.scale * 15 + 100, 600);
 }
