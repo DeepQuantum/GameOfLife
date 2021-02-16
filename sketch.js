@@ -1,11 +1,10 @@
-//TODO: code graph https://editor.p5js.org/aferriss/sketches/S1UTHZBHm
 const AUTOMATON_RULESETS = 
 {
     //https://www.conwaylife.com/wiki/List_of_Life-like_cellular_automata 
-    GAME_OF_LIFE: ["B3/S23", 0], 
+    GAME_OF_LIFE: ["B3/S23", 10], 
     DAY_AND_NIGHT: ["B3678/S34678", 50],
     LIFE_WITHOUT_DEATH: ["B3/S012345678", 2],
-    SEEDS: ["B2/S0", 0.1],
+    SEEDS: ["B2/S0", 0.2],
     REPLICATOR: ["B1357/S1357", 10], 
     _34LIFE: ["B34/S34", 40], 
     DIAMOEBAE: ["B35678/S5678", 50], 
@@ -14,8 +13,8 @@ const AUTOMATON_RULESETS =
     MORLEY: ["B368/S245", 35], 
     ANNEAL: ["B4678/S35678", 50], 
     MAZE: ["B3/S12345", 3], 
-    MAZECETRIC: ["B3/S1234", 25], 
-    FREDKIN: ["B1357/S02468", 1],
+    MAZECETRIC: ["B3/S1234", 10], 
+    FREDKIN: ["B1357/S02468", 0.1],
     VOTE45: ["B4678/S35678", 50], 
     WALLED_CITIES: ["B45678/S2345", 22.5], 
     H_TREES: ["B1/S012345678", 0.05],
@@ -24,9 +23,10 @@ const AUTOMATON_RULESETS =
 let game;
 let slider;
 let graphPoints;
+let sel;
 
 function setup() {
-    game = new MovingCellularAutomaton(AUTOMATON_RULESETS.DAY_AND_NIGHT, 90, 1, 0, 75);
+    game = new CellularAutomaton(AUTOMATON_RULESETS.GAME_OF_LIFE, 90 );
     
 
     createCanvas(3000, 1500);
@@ -40,7 +40,7 @@ function setup() {
     slider.size(200, 200);
 
     setupButton();
-
+    setupSelect();
 }
 
 function draw() 
@@ -57,6 +57,30 @@ function draw()
 function resetGame()
 {
     graphPoints = [];
+    game.initField();
+}
+
+function setupSelect()
+{
+    sel = createSelect();
+    for (var i = 0; i < Object.keys(AUTOMATON_RULESETS).length; i++)
+    {
+        sel.option(Object.keys(AUTOMATON_RULESETS)[i] + ": " + Object.values(AUTOMATON_RULESETS)[i]);
+    }
+    sel.position(game.scale * 15 + 800, 430);
+    sel.style('font-size', 50);
+    sel.style('background-color', color(0, 0, 255));
+    sel.size(width/20 + 600, height/15);
+    sel.changed(selectNewRule);
+}
+
+function selectNewRule()
+{
+    var value = sel.value();
+    var substrName = value.substring(0, value.indexOf(":"));
+    var substrRule = value.substring(substrName.length + 2, value.length);
+    var newRuleValue = Object.values(AUTOMATON_RULESETS).find(element => element == substrRule);
+    game = new CellularAutomaton(newRuleValue, 90);
     game.initField();
 }
 
@@ -110,7 +134,7 @@ function updateText()
     text("Generation: " + game.generation, game.scale * 15 + 100, 100);
     text("Active: " + game.active, game.scale * 15 + 100, 200);
     text("FPS: " + round(frameRate()), game.scale * 15 + 100, 300)
-    text("Current Rule: " + game.rule[0], game.scale * 15 + 100, 500);
+    text("Current Rule: ", game.scale * 15 + 100, 500);
     textSize(40);
     text("Probability: " + game.probability + "% per cell", game.scale * 15 + 100, 600);
 }
