@@ -33,7 +33,7 @@ function setup() {
     background(0);
     graphPoints = [];
     
-    slider = createSlider(0, 60, 60, 1);
+    slider = createSlider(1, 60, 60, 1);
     slider.position(game.scale * 15 + 600, 220);
     slider.style('width', '');
     slider.style('height', '10px');

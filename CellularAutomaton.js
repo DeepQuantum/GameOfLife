@@ -25,8 +25,7 @@ class CellularAutomaton
         this.generation = 0;
         this.field = CellularAutomaton.init2DArray(this.scale);
         this.colorfield = CellularAutomaton.init2DArray(this.scale);
-        
-
+    
     
         for (var x = 0; x < this.scale; x++) {
             for (var y = 0; y < this.scale; y++) {
