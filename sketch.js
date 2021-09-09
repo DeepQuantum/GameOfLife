@@ -33,14 +33,17 @@ function setup() {
     background(0);
     graphPoints = [];
     
+    setupSlider();
+    setupButton();
+    setupSelect();
+}
+
+function setupSlider() {
     slider = createSlider(1, 60, 60, 1);
     slider.position(game.scale * 15 + 600, 220);
     slider.style('width', '');
     slider.style('height', '10px');
     slider.size(200, 200);
-
-    setupButton();
-    setupSelect();
 }
 
 function draw() 
