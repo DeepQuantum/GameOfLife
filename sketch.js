@@ -1,3 +1,4 @@
+
 const AUTOMATON_RULESETS = 
 {
     //https://www.conwaylife.com/wiki/List_of_Life-like_cellular_automata 
@@ -18,29 +19,35 @@ const AUTOMATON_RULESETS =
     VOTE45: ["B4678/S35678", 50], 
     WALLED_CITIES: ["B45678/S2345", 22.5], 
     H_TREES: ["B1/S012345678", 0.05],
+    GOL_ZERO: ["B3/S23", 0],
 }; 
 
 let game;
 let slider;
 let graphPoints;
-let sel;
+let ruleSelect;
+let patternSelect;
+let isInEditingMode;
+let images;
+
 
 function setup() {
-    game = new CellularAutomaton(AUTOMATON_RULESETS.GAME_OF_LIFE, 90 );
-    
-
+    game = new CellularAutomaton(AUTOMATON_RULESETS.GOL_ZERO, 90 );
+    game.addPattern(PATTERNS.GLIDERGUN, 20, 10);
     createCanvas(3000, 1500);
+    //preloadImages();
     background(0);
     graphPoints = [];
-    
+    isInEditingMode = false;
     setupSlider();
-    setupButton();
+    setupButtons();
     setupSelect();
 }
 
+
 function setupSlider() {
     slider = createSlider(1, 60, 60, 1);
-    slider.position(game.scale * 15 + 600, 220);
+    slider.position(game.scale * 15 + 500, 180);
     slider.style('width', '');
     slider.style('height', '10px');
     slider.size(200, 200);
@@ -52,9 +59,12 @@ function draw()
     {
         updateText();
         updateFramerate();
-        drawGraph();
+        if (!isInEditingMode){
+            drawGraph();
+        }
         game.updateField();
     }
+    //game.isPaused = true;
 }
 
 function resetGame()
@@ -65,21 +75,21 @@ function resetGame()
 
 function setupSelect()
 {
-    sel = createSelect();
+    ruleSelect = createSelect();
     for (var i = 0; i < Object.keys(AUTOMATON_RULESETS).length; i++)
     {
-        sel.option(Object.keys(AUTOMATON_RULESETS)[i] + ": " + Object.values(AUTOMATON_RULESETS)[i]);
+        ruleSelect.option(Object.keys(AUTOMATON_RULESETS)[i] + ": " + Object.values(AUTOMATON_RULESETS)[i]);
     }
-    sel.position(game.scale * 15 + 800, 430);
-    sel.style('font-size', 50);
-    sel.style('background-color', color(0, 0, 255));
-    sel.size(width/20 + 600, height/15);
-    sel.changed(selectNewRule);
+    ruleSelect.position(game.scale * 15 + 800, 430);
+    ruleSelect.style('font-size', 50);
+    ruleSelect.style('background-color', color(0, 0, 255));
+    ruleSelect.size(width/20 + 600, height/15);
+    ruleSelect.changed(selectNewRule);
 }
 
 function selectNewRule()
 {
-    var value = sel.value();
+    var value = ruleSelect.value();
     var substrName = value.substring(0, value.indexOf(":"));
     var substrRule = value.substring(substrName.length + 2, value.length);
     var newRuleValue = Object.values(AUTOMATON_RULESETS).find(element => element == substrRule);
@@ -88,7 +98,7 @@ function selectNewRule()
 }
 
 
-function setupButton()
+function setupButtons()
 {
     var buttonP = createButton('Pause');
     buttonP.position(game.scale * 15 + 1200, 50)
@@ -103,7 +113,14 @@ function setupButton()
     buttonR.mousePressed(() => resetGame());
     buttonR.style('background-color', color(0,0,255));
     buttonR.style('font-size', 40)
-}
+
+    var buttonEM = createButton('Editing Mode');
+    buttonEM.position(game.scale * 15 + 1200, 150);
+    buttonEM.size(width/8 + 5, height/20);
+    buttonEM.mousePressed(() => enterEditingMode());
+    buttonEM.style('background-color', color(0,0,255));
+    buttonEM.style('font-size', 40);
+} 
 
 function drawGraph()
 {
@@ -127,7 +144,26 @@ function drawGraph()
     }
 }
 
+function enterEditingMode(){
+    isInEditingMode = true;
+    patternSelect = createSelect();
+    for (var i = 0; i < Object.keys(PATTERNS).length; i++)
+    {
+        patternSelect.option(Object.keys(PATTERNS)[i]);
+    }
+    patternSelect.position(game.scale * 15 + 110, 680);
+    patternSelect.style('font-size', 50);
+    patternSelect.style('background-color', color(0, 0, 255));
+    patternSelect.size(width/20 + 600, height/15);
+    patternSelect.changed(showSelectedPattern);
+}
 
+function showSelectedPattern() {
+    var patternName = patternSelect.value();
+    var pattern = Object.keys(PATTERNS).find(element => element == patternName);
+    var patternImage = images[pattern];
+    image(patternImage, game.scale * 15 +110, 800);
+}
 
 function updateText() 
 {
